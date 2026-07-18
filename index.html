@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://devconnect-dev.github.io/Nexus/nexus-sdk.js"></script>
 <style>
 :root {
   --bg0:#0B140F; --bg1:#122018; --bg2:#182A20; --bg3:#203728;
@@ -346,6 +347,9 @@ const academyDb = supabase.createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrZXpkdGFnZW5paWR3amxneXlzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMTg3NDgsImV4cCI6MjA5NDU5NDc0OH0.aolWqRWGp2sJyHsm3vFNx6wVEyt1uEc7rM5i4fDgb88'
 );
 
+// Nexus — monitoring sécu (compte Business DevConnect)
+Nexus.init('nx_live_da8c56f1109c3082dd6a2f6d422875b7dbe96cc5cb45e0a1');
+
 function escapeHtml(str) {
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
@@ -493,6 +497,11 @@ function sendFeedback() {
     btn.textContent = "Envoyer mon avis";
     if (error) {
       console.error('academy_feedback insert error', error);
+      Nexus.track('form_submission_failed', {
+        user_ref: null,
+        severity: 'low',
+        details: { form: 'academy_feedback', error: error.message }
+      });
       showToast("Échec de l'envoi — réessaie dans un instant");
       return;
     }
